@@ -21,7 +21,6 @@ const checkValidation = (req: MedusaRequest | any) => {
 
 export async function POST(req: MedusaRequest | any, res: MedusaResponse) {
     try {
-        console.log("req.body---", req.body)
         const { customer_id } = req.user;
         const { old_password, new_password } = req.body;
         checkValidation(req);
