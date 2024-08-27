@@ -49,6 +49,7 @@ const plugins = [
       autoRebuild: true,
       develop: {
         open: process.env.OPEN_BROWSER !== "false",
+        // open: false,
       },
     },
   },
@@ -66,7 +67,7 @@ const plugins = [
 ];
 
 const modules = {
-  /*eventBus: {
+  eventBus: {
     resolve: "@medusajs/event-bus-redis",
     options: {
       redisUrl: REDIS_URL
@@ -77,19 +78,28 @@ const modules = {
     options: {
       redisUrl: REDIS_URL
     }
-  },*/
+  },
 };
-
+console.log("DATABASE_SSL---", process.env.DATABASE_SSL)
 /** @type {import('@medusajs/medusa').ConfigModule["projectConfig"]} */
 const projectConfig = {
   jwt_secret: process.env.JWT_SECRET || "supersecret",
   cookie_secret: process.env.COOKIE_SECRET || "supersecret",
   store_cors: STORE_CORS,
-  database_url: DATABASE_URL,
   admin_cors: ADMIN_CORS,
+  database_url: DATABASE_URL,
+  database_extra:
+    process.env.DATABASE_SSL === 'true'
+      ? {
+        ssl: {
+          rejectUnauthorized: true
+        }
+      } : {},
   // Uncomment the following lines to enable REDIS
-  // redis_url: REDIS_URL
+  redis_url: REDIS_URL
 };
+
+console.log("project config----", projectConfig);
 
 /** @type {import('@medusajs/medusa').ConfigModule} */
 module.exports = {

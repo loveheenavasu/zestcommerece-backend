@@ -3,6 +3,13 @@ import type { MedusaRequest, MedusaResponse } from "@medusajs/medusa";
 import { CustomerService, AuthService } from '@medusajs/medusa';
 import Joi from 'joi';
 
+class AuthServiceWrapper extends AuthService {
+    public async comparePasswords(password: string, hash: string): Promise<boolean> {
+        return this.comparePassword_(password, hash);
+    }
+}
+
+
 
 // Validation Schema
 const passwordChangeSchema = Joi.object({
@@ -28,10 +35,11 @@ export async function POST(req: MedusaRequest | any, res: MedusaResponse) {
         // Fetch customer data
         const fetchCustomerData = await customerService.retrieve(customer_id, { select: ["id", "email", "password_hash"] });
         console.log("fetchCustomerData--", fetchCustomerData)
-        const authService = req.scope.resolve('authService') as AuthService;
+        const authService = req.scope.resolve('authService') as AuthServiceWrapper;
+        // const authService = req.scope.resolve('authService') as AuthService;
 
         // Compare old password
-        const isOldPasswordValid = await authService.comparePassword_(old_password, fetchCustomerData.password_hash);
+        const isOldPasswordValid = await authService.comparePasswords(old_password, fetchCustomerData.password_hash);
         console.log("isOldPasswordValid--", isOldPasswordValid)
         if (!isOldPasswordValid) {
             // ----------
